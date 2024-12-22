@@ -10,7 +10,7 @@ const db = () => {
       console.log("Mongo DB'ye bağlandı!");
     })
     .catch((err) => {
-      console.log(err);
+      throw new Error("DB bağlantısında hata!", 404);
     });
 };
 
