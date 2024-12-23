@@ -34,7 +34,6 @@ const addAbout = async (req, res) => {
       about,
       message: "About oluşturuldu!",
     });
-    console.log(about);
   } catch (err) {
     res.status(500).json({
       message: "Bir hata oluştu",
