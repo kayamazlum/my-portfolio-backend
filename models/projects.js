@@ -8,6 +8,7 @@ const projectsSchema = new mongoose.Schema(
     image_url: { type: [String], required: true },
     skills: { type: [String], required: true },
     site_url: { type: String },
+    git_repo_url: { type: String },
   },
   {
     timestamps: {

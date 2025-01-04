@@ -48,6 +48,7 @@ const addProject = async (req, res) => {
       image_url: imageUrls, // Resim URL'leri
       skills: req.body.skills.split(","), // Skills'ı diziye dönüştür
       site_url: req.body.site_url,
+      git_repo_url: req.body.git_repo_url,
     };
 
     const project = await Projects.create(projectData);
@@ -100,6 +101,7 @@ const updateProject = async (req, res) => {
       content: req.body.content || oldData.content,
       skills: req.body.skills ? req.body.skills.split(",") : oldData.skills,
       site_url: req.body.site_url || oldData.site_url,
+      git_repo_url: req.body.git_repo_url || oldData.git_repo_url,
     };
 
     if (lastImage.length > 0) {
