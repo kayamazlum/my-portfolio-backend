@@ -1,13 +1,22 @@
+const moment = require("moment");
 const Projects = require("../models/projects");
 
 const getProjects = async (req, res) => {
   try {
-    const projects = await Projects.find();
-    if (!projects || !projects.length) {
-      return res.status(400).json({
+    let projects = await Projects.find().sort({
+      created_at: -1,
+    });
+    if (!projects.length) {
+      return res.status(200).json({
         message: "Henüz bir proje eklenmedi!",
       });
     }
+
+    projects = projects.map((project) => ({
+      ...project._doc,
+      cretaed_at: moment(project.created_at).format("DD/MM/YYYY HH:mm:ss"),
+      updated_at: moment(project.updated_at).format("DD/MM/YYYY HH:mm:ss"),
+    }));
 
     res.status(200).json({
       projects,
@@ -58,21 +67,43 @@ const addProject = async (req, res) => {
 
 const updateProject = async (req, res) => {
   try {
-    const { _id } = req.body;
-    const imageUrls = req.files
+    const { _id, deleted_images = "" } = req.body;
+    if (!_id) {
+      return res.status(404).json({
+        message: "Item bulunamadı!",
+      });
+    }
+
+    let imageUrls = req.files
       ? req.files.map((file) => `/uploads/${file.filename}`)
-      : undefined;
+      : [];
+
+    const oldData = await Projects.findById(_id);
+    if (!oldData) {
+      return res.status(404).json({
+        message: "Proje bulunamadı!",
+      });
+    }
+
+    if (oldData.image_url) {
+      imageUrls = imageUrls.concat(oldData.image_url);
+    }
+
+    const deletedImages = deleted_images ? deleted_images.split(",") : [];
+    const lastImage = imageUrls.filter(
+      (image) => !deletedImages.includes(String(image))
+    );
 
     const updateData = {
-      title: req.body.title,
-      summary: req.body.summary,
-      content: req.body.content,
-      skills: req.body.skills.split(","),
-      site_url: req.body.site_url,
+      title: req.body.title || oldData.title,
+      summary: req.body.summary || oldData.summary,
+      content: req.body.content || oldData.content,
+      skills: req.body.skills ? req.body.skills.split(",") : oldData.skills,
+      site_url: req.body.site_url || oldData.site_url,
     };
 
-    if (imageUrls) {
-      updateData.image_url = imageUrls;
+    if (lastImage.length > 0) {
+      updateData.image_url = lastImage;
     }
 
     const project = await Projects.findByIdAndUpdate(_id, updateData, {
@@ -107,9 +138,10 @@ const deleteProject = async (req, res) => {
         message: "Proje bulunamadı!",
       });
     }
-
+    const projects = await Projects.find();
     res.status(200).json({
       message: "Proje başarıyla silindi!",
+      projects,
     });
   } catch (error) {
     res.status(500).json({
@@ -127,12 +159,23 @@ const detailsProject = async (req, res) => {
         message: "Proje ID'si geçersiz!",
       });
     }
-    const selectedProject = await Projects.findById(_id);
+    let selectedProject = await Projects.findById(_id);
     if (!selectedProject) {
       return res.status(404).json({
         message: "Proje bulunamadı!",
       });
     }
+
+    selectedProject = {
+      ...selectedProject._doc,
+      created_at: moment(selectedProject.created_at).format(
+        "DD/MM/YYYY HH:mm:ss"
+      ),
+      updated_at: moment(selectedProject.updated_at).format(
+        "DD/MM/YY HH:mm:ss"
+      ),
+    };
+
     res.status(200).json({
       selectedProject,
     });

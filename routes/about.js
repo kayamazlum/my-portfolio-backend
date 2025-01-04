@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.get("/get-about", getAbout);
 router.post("/add-about", addAbout);
-router.post("/update-about", updateAbout);
+router.put("/update-about", updateAbout);
 
 module.exports = router;

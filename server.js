@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const db = require("./config/db");
 const about = require("./routes/about");
 const projects = require("./routes/projects");
+const hero = require("./routes/hero");
 dotenv.config();
 
 const app = express();
@@ -19,6 +20,7 @@ db();
 
 app.use("/api", about);
 app.use("/api", projects);
+app.use("/api", hero);
 
 app.listen(PORT, () => {
   console.log("server is running on port", PORT);
