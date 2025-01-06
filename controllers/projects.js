@@ -2,6 +2,8 @@ const moment = require("moment");
 const Projects = require("../models/projects");
 
 const getProjects = async (req, res) => {
+  // console.log(req.headers);
+
   try {
     let projects = await Projects.find().sort({
       created_at: -1,
@@ -14,7 +16,7 @@ const getProjects = async (req, res) => {
 
     projects = projects.map((project) => ({
       ...project._doc,
-      cretaed_at: moment(project.created_at).format("DD/MM/YYYY HH:mm:ss"),
+      created_at: moment(project.created_at).format("DD/MM/YYYY HH:mm:ss"),
       updated_at: moment(project.updated_at).format("DD/MM/YYYY HH:mm:ss"),
     }));
 
@@ -71,7 +73,7 @@ const updateProject = async (req, res) => {
     const { _id, deleted_images = "" } = req.body;
     if (!_id) {
       return res.status(404).json({
-        message: "Item bulunamadı!",
+        message: "ID bulunamadı!",
       });
     }
 
@@ -100,17 +102,20 @@ const updateProject = async (req, res) => {
       summary: req.body.summary || oldData.summary,
       content: req.body.content || oldData.content,
       skills: req.body.skills ? req.body.skills.split(",") : oldData.skills,
-      site_url: req.body.site_url || oldData.site_url,
-      git_repo_url: req.body.git_repo_url || oldData.git_repo_url,
+      site_url:
+        req.body.site_url !== undefined ? req.body.site_url : oldData.site_url,
+
+      git_repo_url:
+        req.body.git_repo_url !== undefined
+          ? req.body.git_repo_url
+          : oldData.git_repo_url,
     };
 
     if (lastImage.length > 0) {
       updateData.image_url = lastImage;
     }
 
-    const project = await Projects.findByIdAndUpdate(_id, updateData, {
-      new: true,
-    });
+    const project = await Projects.findByIdAndUpdate(_id, updateData);
 
     if (!project) {
       return res.status(404).json({
