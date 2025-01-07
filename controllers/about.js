@@ -23,13 +23,20 @@ const getAbout = async (req, res) => {
 const addAbout = async (req, res) => {
   try {
     const isAbout = await About.find();
-    if (isAbout.length != 0) {
+    if (isAbout.length !== 0) {
       return res.status(500).json({
         message: "Zaten about var! Lütfen güncelleme işlemi yapınız.",
       });
     }
 
-    const about = await About.create(req.body);
+    // Skills alanını virgül ile ayır ve diziye dönüştür
+    const aboutData = {
+      ...req.body,
+      skills: req.body.skills ? req.body.skills.split(",") : [],
+    };
+
+    const about = await About.create(aboutData);
+
     res.status(201).json({
       about,
       message: "About oluşturuldu!",
@@ -44,9 +51,14 @@ const addAbout = async (req, res) => {
 
 const updateAbout = async (req, res) => {
   try {
-    const { _id, ...updateData } = req.body;
+    const { _id, skills, ...updateData } = req.body;
     if (!_id) {
       throw new Error("_id bilgisi bulunamadı!", 404);
+    }
+
+    // Skills alanını virgül ile ayır ve diziye dönüştür
+    if (skills) {
+      updateData.skills = skills.split(",");
     }
 
     const newAbout = await About.findByIdAndUpdate(_id, updateData, {
