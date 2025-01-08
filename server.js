@@ -5,6 +5,7 @@ const db = require("./config/db");
 const about = require("./routes/about");
 const projects = require("./routes/projects");
 const hero = require("./routes/hero");
+const user = require("./routes/user");
 dotenv.config();
 
 const app = express();
@@ -17,6 +18,8 @@ app.use("/uploads", express.static("uploads"));
 const PORT = process.env.PORT || 4001;
 
 db();
+
+app.use("/api", user);
 
 app.use("/api", about);
 app.use("/api", projects);

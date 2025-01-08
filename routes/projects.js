@@ -7,17 +7,28 @@ const {
   detailsProject,
 } = require("../controllers/projects");
 const upload = require("../middleware/uploadImage");
+const authenticateToken = require("../middleware/authenticateToken");
 
 const router = express.Router();
 
 router.get("/get-projects", getProjects);
 
-router.post("/add-project", upload.array("images", 10), addProject);
+router.post(
+  "/add-project",
+  authenticateToken,
+  upload.array("images", 10),
+  addProject
+);
 
-router.put("/update-project", upload.array("images", 10), updateProject);
+router.put(
+  "/update-project",
+  authenticateToken,
+  upload.array("images", 10),
+  updateProject
+);
 
-router.delete("/delete-project", deleteProject);
+router.delete("/delete-project", authenticateToken, deleteProject);
 
-router.get("/details-project", detailsProject);
+router.get("/details-project", authenticateToken, detailsProject);
 
 module.exports = router;
