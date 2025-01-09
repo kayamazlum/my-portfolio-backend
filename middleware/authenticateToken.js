@@ -1,15 +1,24 @@
 const jwt = require("jsonwebtoken");
-const secretKey = process.env.JWT_SECRET_KEY;
 
 const authenticateToken = (req, res, next) => {
+  const secretKey = process.env.JWT_SECRET_KEY;
   const token = req.headers["authorization"];
-  if (!token) return res.status(401).json({ message: "Token gerekli" });
+  console.log(req.headers);
+  console.log("SECRETTTT", secretKey);
 
-  jwt.verify(token, secretKey, (err, user) => {
-    if (err) return res.status(403).json({ message: "Geçersiz token" });
-    res.user = user;
-    next();
-  });
+  console.log("BACKEND TOKENİ", token);
+
+  if (!token) return res.status(401).json({ message: "Yetki yok!" });
+
+  try {
+    jwt.verify(token, secretKey, (err, user) => {
+      if (err) return res.status(401).json({ message: "Geçersiz token!" });
+      res.user = user;
+      next();
+    });
+  } catch (error) {
+    console.log("HATAAAA", error);
+  }
 };
 
 module.exports = authenticateToken;

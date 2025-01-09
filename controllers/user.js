@@ -2,8 +2,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
-const secretKey = process.env.JWT_SECRET || "your_secret_key";
-
 // Kullanıcı kayıt
 const register = async (req, res) => {
   const { username, password } = req.body;
@@ -24,6 +22,7 @@ const register = async (req, res) => {
 
 // Kullanıcı giriş
 const login = async (req, res) => {
+  const secretKey = process.env.JWT_SECRET_KEY;
   const { username, password } = req.body;
 
   try {

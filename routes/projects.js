@@ -15,7 +15,7 @@ router.get("/get-projects", getProjects);
 
 router.post(
   "/add-project",
-  authenticateToken,
+
   upload.array("images", 10),
   addProject
 );
