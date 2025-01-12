@@ -15,7 +15,7 @@ router.get("/get-projects", getProjects);
 
 router.post(
   "/add-project",
-
+  authenticateToken,
   upload.array("images", 10),
   addProject
 );
@@ -29,6 +29,6 @@ router.put(
 
 router.delete("/delete-project", authenticateToken, deleteProject);
 
-router.get("/details-project", authenticateToken, detailsProject);
+router.get("/details-project", detailsProject);
 
 module.exports = router;
